@@ -2,14 +2,10 @@
 
 namespace Swoft\Http\Message\Server;
 
-use Swoft\Core\RequestContext;
-use Swoft\Bean\Collector;
 use Swoft\Contract\Arrayable;
 use Swoft\Helper\JsonHelper;
 use Swoft\Helper\StringHelper;
-use Swoft\App;
 use Swoft\Http\Message\Stream\SwooleStream;
-use Swoft\Web\ViewRendererTrait;
 
 /**
  * 响应response
@@ -22,8 +18,6 @@ use Swoft\Web\ViewRendererTrait;
  */
 class Response extends \Swoft\Http\Message\Base\Response
 {
-    use ViewRendererTrait;
-
     /**
      * @var \Throwable|null
      */
@@ -61,34 +55,11 @@ class Response extends \Swoft\Http\Message\Base\Response
     }
 
     /**
-     * return a View format response
-     *
-     * @param array|Arrayable $data
-     * @param null|string $template It's a default value, use Annotation template first
-     * @param null|string $layout It's a default value, use Annotation layout first
-     * @return \Swoft\Web\Response
-     */
-    public function view($data = [], $template = null, $layout = null): Response
-    {
-        if ($data instanceof Arrayable) {
-            $data = $data->toArray();
-        }
-        $controllerClass = RequestContext::getContextDataByKey('controllerClass');
-        $controllerAction = RequestContext::getContextDataByKey('controllerAction');
-        $template = Collector::$requestMapping[$controllerClass]['view'][$controllerAction]['template'] ?? App::getAlias($template);
-        $layout = Collector::$requestMapping[$controllerClass]['view'][$controllerAction]['layout'] ?? App::getAlias($layout);
-        $response = $this->render($template, $data, $layout);
-        // Headers
-        $response = $response->withoutHeader('Content-Type')->withAddedHeader('Content-Type', 'text/html');
-        return $response;
-    }
-
-    /**
      * return a Raw format response
      *
      * @param  string $data   The data
      * @param  int    $status The HTTP status code.
-     * @return \Swoft\Web\Response when $data not jsonable
+     * @return \Swoft\Http\Message\Server\Response when $data not jsonable
      */
     public function raw(string $data = '', int $status = 200): Response
     {
@@ -135,44 +106,7 @@ class Response extends \Swoft\Http\Message\Base\Response
         // Status code
         $status && $response = $response->withStatus($status);
 
-        return $response;
-    }
 
-    /**
-     * return an automatic detection format response
-     *
-     * @param mixed $data
-     * @param int   $status
-     * @return static
-     */
-    public function auto($data = null, int $status = 200): Response
-    {
-        $accepts = RequestContext::getRequest()->getHeader('accept');
-        $currentAccept = current($accepts);
-        $controllerClass = RequestContext::getContextDataByKey('controllerClass');
-        $controllerAction = RequestContext::getContextDataByKey('controllerAction');
-        $template = Collector::$requestMapping[$controllerClass]['view'][$controllerAction]['template'] ?? null;
-        $matchViewModel = $this->isMatchAccept($currentAccept, 'text/html') && $controllerClass && $this->isArrayable($data) && $template && ! $this->getException();
-        if ($currentAccept) {
-            switch ($currentAccept) {
-                // View
-                case $matchViewModel === true:
-                    $response = $this->view($data, $status);
-                    break;
-                // Json
-                case $this->isMatchAccept($currentAccept, 'application/json'):
-                case $this->isArrayable($data):
-                    ! $this->isArrayable($data) && $data = compact('data');
-                    $response = $this->json($data, $status);
-                    break;
-                // Raw
-                default:
-                    $response = $this->raw((string)$data, $status);
-                    break;
-            }
-        } else {
-            $response = $this->raw((string)$data, $status);
-        }
         return $response;
     }
 
@@ -260,7 +194,7 @@ class Response extends \Swoft\Http\Message\Base\Response
      * @param mixed $value
      * @return bool
      */
-    private function isArrayable($value): bool
+    public function isArrayable($value): bool
     {
         return is_array($value) || $value instanceof Arrayable;
     }
@@ -270,7 +204,7 @@ class Response extends \Swoft\Http\Message\Base\Response
      * @param string $keyword
      * @return bool
      */
-    private function isMatchAccept(string $accept, string $keyword): bool
+    public function isMatchAccept(string $accept, string $keyword): bool
     {
         return StringHelper::contains($accept, $keyword) === true;
     }
