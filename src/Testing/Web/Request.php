@@ -1,5 +1,5 @@
 <?php
-namespace Swoft\Testing\Web;
+namespace Swoft\Http\Message\Testing\Web;
 
 use Swoft\App;
 

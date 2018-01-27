@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Testing\Base;
+namespace Swoft\Http\Message\Testing\Base;
 
 use Swoft\App;
 
