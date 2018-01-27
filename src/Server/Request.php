@@ -65,7 +65,7 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
      * Load a swoole request, and transfer to a swoft request object
      *
      * @param \Swoole\Http\Request $swooleRequest
-     * @return \Swoft\Web\Request
+     * @return \Swoft\Http\Message\Server\Request
      */
     public static function loadFromSwooleRequest(\Swoole\Http\Request $swooleRequest)
     {
