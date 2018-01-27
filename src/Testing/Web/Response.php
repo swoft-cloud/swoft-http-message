@@ -2,7 +2,7 @@
 namespace Swoft\Http\Message\Testing\Web;
 
 use Swoft\App;
-use Swoft\Testing\Base\ResponseAssertTrait;
+use Swoft\Http\Message\Testing\Base\ResponseAssertTrait;
 
 class Response extends \Swoft\Http\Message\Server\Response
 {
