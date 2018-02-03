@@ -509,6 +509,90 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
     }
 
     /**
+     * Get the URL (no query string) for the request.
+     *
+     * @return string
+     */
+    public function url()
+    {
+        return rtrim(preg_replace('/\?.*/', '', $this->getUri()), '/');
+    }
+
+    /**
+     * Get the full URL for the request.
+     *
+     * @return string
+     */
+    public function fullUrl()
+    {
+        $query = $this->getQueryString();
+        $question = $this->getUri()->getHost() . $this->getUri()->getPath() == '/' ? '/?' : '?';
+        return $query ? $this->url() . $question . $query : $this->url();
+    }
+
+    /**
+     * Generates the normalized query string for the Request.
+     *
+     * It builds a normalized query string, where keys/value pairs are alphabetized
+     * and have consistent escaping.
+     *
+     * @return string|null A normalized query string for the Request
+     */
+    public function getQueryString()
+    {
+        $parts = array();
+        $order = array();
+
+        foreach ($this->getQueryParams() as $param) {
+            if ('' === $param || '=' === $param[0]) {
+                // Ignore useless delimiters, e.g. "x=y&".
+                // Also ignore pairs with empty key, even if there was a value, e.g. "=value", as such nameless values cannot be retrieved anyway.
+                // PHP also does not include them when building _GET.
+                continue;
+            }
+
+            $keyValuePair = explode('=', $param, 2);
+
+            // GET parameters, that are submitted from a HTML form, encode spaces as "+" by default (as defined in enctype application/x-www-form-urlencoded).
+            // PHP also converts "+" to spaces when filling the global _GET or when using the function parse_str. This is why we use urldecode and then normalize to
+            // RFC 3986 with rawurlencode.
+            $parts[] = isset($keyValuePair[1]) ?
+                rawurlencode(urldecode($keyValuePair[0])) . '=' . rawurlencode(urldecode($keyValuePair[1])) :
+                rawurlencode(urldecode($keyValuePair[0]));
+            $order[] = urldecode($keyValuePair[0]);
+        }
+
+        array_multisort($order, SORT_ASC, $parts);
+
+        return implode('&', $parts) ?: null;
+    }
+
+    /**
+     * Determine if the request is the result of an ajax call.
+     *
+     * @return bool
+     */
+    public function isAjax()
+    {
+        return $this->isXmlHttpRequest();
+    }
+
+    /**
+     * Returns true if the request is a XMLHttpRequest.
+     *
+     * It works if your JavaScript library sets an X-Requested-With HTTP header.
+     * It is known to work with common JavaScript frameworks:
+     *
+     * @see http://en.wikipedia.org/wiki/List_of_Ajax_frameworks#JavaScript
+     *
+     * @return bool true if the request is an XMLHttpRequest, false otherwise
+     */
+    public function isXmlHttpRequest()
+    {
+        return 'XMLHttpRequest' == $this->hasHeader('X-Requested-With');
+    }
+
+    /**
      * @return \Swoole\Http\Request
      */
     public function getSwooleRequest(): \Swoole\Http\Request
