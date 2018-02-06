@@ -5,6 +5,7 @@ namespace Swoft\Http\Message\Server;
 use Swoft\Contract\Arrayable;
 use Swoft\Helper\JsonHelper;
 use Swoft\Helper\StringHelper;
+use Swoft\Http\Message\Cookie\Cookie;
 use Swoft\Http\Message\Stream\SwooleStream;
 
 /**
@@ -128,7 +129,15 @@ class Response extends \Swoft\Http\Message\Base\Response
         /**
          * Cookies
          */
-        // TODO: handle cookies
+        foreach ((array)$this->cookies as $domain => $paths) {
+            foreach ($paths ?? [] as $path => $item) {
+                foreach ($item ?? [] as $name => $cookie) {
+                    if ($cookie instanceof Cookie) {
+                        $this->swooleResponse->cookie($cookie->getName(), $cookie->getValue() ? : 1, $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain());
+                    }
+                }
+            }
+        }
 
         /**
          * Status code
@@ -159,17 +168,16 @@ class Response extends \Swoft\Http\Message\Base\Response
     }
 
     /**
-     * 添加cookie
+     * Return an instance with specified cookies.
      *
-     * @param string  $key
-     * @param  string $value
-     * @param int     $expire
-     * @param string  $path
-     * @param string  $domain
+     * @param Cookie $cookie
+     * @return static
      */
-    public function addCookie($key, $value, $expire = 0, $path = '/', $domain = '')
+    public function withCookie(Cookie $cookie)
     {
-        $this->swooleResponse->cookie($key, $value, $expire, $path, $domain);
+        $clone = clone $this;
+        $clone->cookies[$cookie->getDomain()][$cookie->getPath()][$cookie->getName()] = $cookie;
+        return $clone;
     }
 
     /**

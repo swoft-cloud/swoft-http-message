@@ -523,48 +523,11 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
      *
      * @return string
      */
-    public function fullUrl()
+    public function fullUrl(): string
     {
-        $query = $this->getQueryString();
+        $query = $this->getUri()->getQuery();
         $question = $this->getUri()->getHost() . $this->getUri()->getPath() == '/' ? '/?' : '?';
         return $query ? $this->url() . $question . $query : $this->url();
-    }
-
-    /**
-     * Generates the normalized query string for the Request.
-     *
-     * It builds a normalized query string, where keys/value pairs are alphabetized
-     * and have consistent escaping.
-     *
-     * @return string|null A normalized query string for the Request
-     */
-    public function getQueryString()
-    {
-        $parts = array();
-        $order = array();
-
-        foreach ($this->getQueryParams() as $param) {
-            if ('' === $param || '=' === $param[0]) {
-                // Ignore useless delimiters, e.g. "x=y&".
-                // Also ignore pairs with empty key, even if there was a value, e.g. "=value", as such nameless values cannot be retrieved anyway.
-                // PHP also does not include them when building _GET.
-                continue;
-            }
-
-            $keyValuePair = explode('=', $param, 2);
-
-            // GET parameters, that are submitted from a HTML form, encode spaces as "+" by default (as defined in enctype application/x-www-form-urlencoded).
-            // PHP also converts "+" to spaces when filling the global _GET or when using the function parse_str. This is why we use urldecode and then normalize to
-            // RFC 3986 with rawurlencode.
-            $parts[] = isset($keyValuePair[1]) ?
-                rawurlencode(urldecode($keyValuePair[0])) . '=' . rawurlencode(urldecode($keyValuePair[1])) :
-                rawurlencode(urldecode($keyValuePair[0]));
-            $order[] = urldecode($keyValuePair[0]);
-        }
-
-        array_multisort($order, SORT_ASC, $parts);
-
-        return implode('&', $parts) ?: null;
     }
 
     /**
