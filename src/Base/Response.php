@@ -100,23 +100,6 @@ class Response implements ResponseInterface
     private $attributes = [];
 
     /**
-     * swoole响应请求
-     *
-     * @var \Swoole\Http\Response
-     */
-    protected $swooleResponse;
-
-    /**
-     * 初始化响应请求
-     *
-     * @param \Swoole\Http\Response $response
-     */
-    public function __construct(\Swoole\Http\Response $response = null)
-    {
-        $this->swooleResponse = $response;
-    }
-
-    /**
      * Retrieve attributes derived from the request.
      * The request "attributes" may be used to allow injection of any
      * parameters derived from the request: e.g., the results of path
@@ -167,14 +150,6 @@ class Response implements ResponseInterface
         $clone = clone $this;
         $clone->attributes[$name] = $value;
         return $clone;
-    }
-
-
-    /**
-     * 响应数据
-     */
-    public function send()
-    {
     }
 
     /**
