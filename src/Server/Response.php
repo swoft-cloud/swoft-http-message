@@ -133,7 +133,7 @@ class Response extends \Swoft\Http\Message\Base\Response
             foreach ($paths ?? [] as $path => $item) {
                 foreach ($item ?? [] as $name => $cookie) {
                     if ($cookie instanceof Cookie) {
-                        $this->swooleResponse->cookie($cookie->getName(), $cookie->getValue() ? : 1, $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), true, true);
+                        $this->swooleResponse->cookie($cookie->getName(), $cookie->getValue() ? : 1, $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly());
                     }
                 }
             }
