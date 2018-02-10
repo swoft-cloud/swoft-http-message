@@ -32,6 +32,11 @@ class Response extends \Swoft\Http\Message\Base\Response
     protected $swooleResponse;
 
     /**
+     * @var array
+     */
+    protected $cookies = [];
+
+    /**
      * 初始化响应请求
      *
      * @param \Swoole\Http\Response $response
