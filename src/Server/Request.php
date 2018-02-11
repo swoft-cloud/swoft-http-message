@@ -7,6 +7,7 @@ use Psr\Http\Message\UploadedFileInterface;
 use Swoft\Http\Message\Server\Concerns\InteractsWithInput;
 use Swoft\Http\Message\Uri\Uri;
 use Swoft\Http\Message\Stream\SwooleStream;
+use Swoft\Http\Message\Upload\UploadedFile;
 
 /**
  * @uses      Request
