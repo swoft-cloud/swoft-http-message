@@ -534,6 +534,7 @@ class Uri implements UriInterface
         if ($fragment != '') {
             $uri .= '#' . $fragment;
         }
+
         return $uri;
     }
 
