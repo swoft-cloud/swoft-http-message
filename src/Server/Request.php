@@ -7,6 +7,7 @@ use Psr\Http\Message\UploadedFileInterface;
 use Swoft\Http\Message\Server\Concerns\InteractsWithInput;
 use Swoft\Http\Message\Uri\Uri;
 use Swoft\Http\Message\Stream\SwooleStream;
+use Swoft\Http\Message\Upload\UploadedFile;
 
 /**
  * @uses      Request
@@ -155,9 +156,9 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
 
     /**
      * Get a Uri populated with values from $swooleRequest->server.
-     *
      * @param \Swoole\Http\Request $swooleRequest
      * @return \Psr\Http\Message\UriInterface
+     * @throws \InvalidArgumentException
      */
     private static function getUriFromGlobals(\Swoole\Http\Request $swooleRequest)
     {
@@ -179,7 +180,8 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
         } elseif (isset($server['server_addr'])) {
             $uri = $uri->withHost($server['server_addr']);
         } elseif (isset($header['host'])) {
-            $uri = $uri->withHost($header['host']);
+            $host = \strpos($header['host'], ':') ? explode(':', $header['host'])[0] : $header['host'];
+            $uri = $uri->withHost($host);
         }
 
         if (! $hasPort && isset($server['server_port'])) {
