@@ -7,7 +7,7 @@ use Swoft\Http\Message\Bean\Annotation\Middlewares;
 use Swoft\Bean\CollectorInterface;
 
 /**
- * the collector of middleware
+ * Middleware collector
  */
 class MiddlewareCollector implements CollectorInterface
 {

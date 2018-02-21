@@ -5,6 +5,8 @@ namespace Swoft\Http\Message\Bean\Annotation;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
+ * Middlewares annotation
+ *
  * @Annotation
  * @Target({"ALL"})
  */

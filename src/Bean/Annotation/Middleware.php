@@ -6,6 +6,8 @@ use Doctrine\Common\Annotations\Annotation\Target;
 use Swoft\Helper\StringHelper;
 
 /**
+ * Middleware annotation
+ *
  * @Annotation
  * @Target({"ALL"})
  */

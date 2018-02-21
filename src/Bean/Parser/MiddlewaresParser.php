@@ -4,9 +4,10 @@ namespace Swoft\Http\Message\Bean\Parser;
 
 use Swoft\Bean\Parser\AbstractParser;
 use Swoft\Http\Message\Bean\Annotation\Middlewares;
-use Swoft\Bean\Collector\MiddlewareCollector;
+use Swoft\Http\Message\Bean\Collector\MiddlewareCollector;
 
 /**
+ * Middlewares parser
  */
 class MiddlewaresParser extends AbstractParser
 {
