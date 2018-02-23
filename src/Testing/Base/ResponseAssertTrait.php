@@ -6,11 +6,9 @@ use PHPUnit\Framework\Assert as PHPUnit;
 use Swoft\Helper\StringHelper;
 
 /**
- * @uses      ResponseAssertTrait
- * @version   2017-12-06
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Trait ResponseAssertTrait
+ *
+ * @package Swoft\Http\Message\Testing\Base
  */
 trait ResponseAssertTrait
 {
@@ -19,6 +17,7 @@ trait ResponseAssertTrait
      * Assert that the response has a successful status code.
      *
      * @return $this
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     public function assertSuccessful()
     {
@@ -32,6 +31,7 @@ trait ResponseAssertTrait
      *
      * @param  int $status
      * @return $this
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     public function assertStatus($status)
     {
@@ -48,6 +48,7 @@ trait ResponseAssertTrait
      * @param  string $headerName
      * @param  mixed  $value
      * @return $this
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     public function assertHeader($headerName, $value = null)
     {
@@ -55,7 +56,7 @@ trait ResponseAssertTrait
 
         $actual = $this->getHeaderLine($headerName);
 
-        if (! is_null($value)) {
+        if (null !== $value) {
             PHPUnit::assertEquals($value, $this->getHeaderLine($headerName), "Header [{$headerName}] was found, but value [{$actual}] does not match [{$value}].");
         }
 
@@ -119,6 +120,7 @@ trait ResponseAssertTrait
      *
      * @param  array $data
      * @return $this
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     public function assertJson(array $data)
     {
@@ -132,8 +134,9 @@ trait ResponseAssertTrait
      *
      * @param  array $data
      * @return string
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
-    protected function assertJsonMessage(array $data)
+    protected function assertJsonMessage(array $data): string
     {
         $expected = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
@@ -147,10 +150,11 @@ trait ResponseAssertTrait
      *
      * @param  array $data
      * @return $this
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     public function assertExactJson(array $data)
     {
-        $actual = json_encode((array)$this->decodeResponseJson());
+        $actual = json_encode($this->decodeResponseJson());
 
         PHPUnit::assertEquals(json_encode($data), $actual);
 
@@ -162,10 +166,11 @@ trait ResponseAssertTrait
      *
      * @param  array $data
      * @return $this
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     public function assertJsonFragment(array $data)
     {
-        $actual = json_encode((array)$this->decodeResponseJson());
+        $actual = json_encode($this->decodeResponseJson());
 
         foreach ($data as $key => $value) {
             $expected = substr(json_encode([$key => $value]), 1, -1);
@@ -181,6 +186,7 @@ trait ResponseAssertTrait
      *
      * @param  array $data
      * @return $this
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     public function assertJsonMissing(array $data)
     {
@@ -201,21 +207,22 @@ trait ResponseAssertTrait
      * @param  array      $structure
      * @param  array|null $responseData
      * @return $this
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
     public function assertJsonStructure(array $structure, $responseData = null)
     {
-        if (is_null($responseData)) {
+        if (null === $responseData) {
             $responseData = $this->decodeResponseJson();
         }
 
         foreach ($structure as $key => $value) {
-            if (is_array($value) && $key === '*') {
+            if (\is_array($value) && $key === '*') {
                 PHPUnit::assertInternalType('array', $responseData);
 
                 foreach ($responseData as $responseDataItem) {
                     $this->assertJsonStructure($structure['*'], $responseDataItem);
                 }
-            } elseif (is_array($value)) {
+            } elseif (\is_array($value)) {
                 PHPUnit::assertArrayHasKey($key, $responseData);
 
                 $this->assertJsonStructure($structure[$key], $responseData[$key]);
@@ -231,12 +238,13 @@ trait ResponseAssertTrait
      * Validate and return the decoded response JSON.
      *
      * @return array
+     * @throws \PHPUnit_Framework_AssertionFailedError
      */
-    protected function decodeResponseJson()
+    protected function decodeResponseJson(): array
     {
         $decodedResponse = json_decode($this->getBody()->getContents(), true);
 
-        if (is_null($decodedResponse) || $decodedResponse === false) {
+        if (null === $decodedResponse || $decodedResponse === false) {
             if ($this->exception) {
                 throw $this->exception;
             } else {

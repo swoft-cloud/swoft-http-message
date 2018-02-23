@@ -22,22 +22,30 @@ class MiddlewareCollector implements CollectorInterface
      * @param string $propertyName
      * @param string $methodName
      * @param null   $propertyValue
-     *
      * @return void
      */
-    public static function collect(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
-    {
+    public static function collect(
+        string $className,
+        $objectAnnotation = null,
+        string $propertyName = '',
+        string $methodName = '',
+        $propertyValue = null
+    ) {
         if ($objectAnnotation instanceof Middleware) {
             self::collectMiddleware($className, $methodName, $objectAnnotation);
         } elseif ($objectAnnotation instanceof Middlewares) {
+            var_dump($className);
             self::collectMiddlewares($className, $methodName, $objectAnnotation);
+        }
+        if ($className == 'App\Controllers\MiddlewareController') {
+            echo '<pre>';var_dump(self::$middlewares);echo '</pre>';
         }
     }
 
     /**
      * @return array
      */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$middlewares;
     }
@@ -49,8 +57,11 @@ class MiddlewareCollector implements CollectorInterface
      * @param string      $methodName
      * @param Middlewares $middlewaresAnnotation
      */
-    private static function collectMiddlewares(string $className, string $methodName, Middlewares $middlewaresAnnotation)
-    {
+    private static function collectMiddlewares(
+        string $className,
+        string $methodName,
+        Middlewares $middlewaresAnnotation
+    ) {
         $middlewares = [];
         foreach ($middlewaresAnnotation->getMiddlewares() as $middleware) {
             if ($middleware instanceof Middleware) {
@@ -59,11 +70,11 @@ class MiddlewareCollector implements CollectorInterface
         }
         $middlewares = array_unique($middlewares);
 
-        if (!empty($methodName)) {
-            $scanMiddlewares                                                      = self::$middlewares[$className]['middlewares']['actions'][$methodName]??[];
+        if (! empty($methodName)) {
+            $scanMiddlewares = self::$middlewares[$className]['middlewares']['actions'][$methodName] ?? [];
             self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_merge($scanMiddlewares, $middlewares);
         } else {
-            $scanMiddlewares                                       = self::$middlewares[$className]['middlewares']['group']??[];
+            $scanMiddlewares = self::$middlewares[$className]['middlewares']['group'] ?? [];
             self::$middlewares[$className]['middlewares']['group'] = array_merge($scanMiddlewares, $middlewares);
         }
     }
@@ -81,11 +92,11 @@ class MiddlewareCollector implements CollectorInterface
             $middlewareAnnotation->getClass(),
         ];
 
-        if (!empty($methodName)) {
-            $scanMiddlewares                                                      = self::$middlewares[$className]['middlewares']['actions'][$methodName]??[];
+        if (! empty($methodName)) {
+            $scanMiddlewares = self::$middlewares[$className]['middlewares']['actions'][$methodName] ?? [];
             self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_merge($middlewares, $scanMiddlewares);
         } else {
-            $scanMiddlewares                                       = self::$middlewares[$className]['middlewares']['group']??[];
+            $scanMiddlewares = self::$middlewares[$className]['middlewares']['group'] ?? [];
             self::$middlewares[$className]['middlewares']['group'] = array_merge($middlewares, $scanMiddlewares);
         }
     }
