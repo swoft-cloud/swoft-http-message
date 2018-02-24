@@ -34,11 +34,7 @@ class MiddlewareCollector implements CollectorInterface
         if ($objectAnnotation instanceof Middleware) {
             self::collectMiddleware($className, $methodName, $objectAnnotation);
         } elseif ($objectAnnotation instanceof Middlewares) {
-            var_dump($className);
             self::collectMiddlewares($className, $methodName, $objectAnnotation);
-        }
-        if ($className == 'App\Controllers\MiddlewareController') {
-            echo '<pre>';var_dump(self::$middlewares);echo '</pre>';
         }
     }
 
