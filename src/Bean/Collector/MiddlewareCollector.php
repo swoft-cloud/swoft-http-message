@@ -2,6 +2,7 @@
 
 namespace Swoft\Http\Message\Bean\Collector;
 
+use App\Controllers\MiddlewareController;
 use Swoft\Http\Message\Bean\Annotation\Middleware;
 use Swoft\Http\Message\Bean\Annotation\Middlewares;
 use Swoft\Bean\CollectorInterface;
@@ -58,20 +59,20 @@ class MiddlewareCollector implements CollectorInterface
         string $methodName,
         Middlewares $middlewaresAnnotation
     ) {
-        $middlewares = [];
+        $classMiddlewares = [];
         foreach ($middlewaresAnnotation->getMiddlewares() as $middleware) {
             if ($middleware instanceof Middleware) {
-                $middlewares[] = $middleware->getClass();
+                $classMiddlewares[] = $middleware->getClass();
             }
         }
-        $middlewares = array_unique($middlewares);
+        $classMiddlewares = array_unique($classMiddlewares);
 
         if (! empty($methodName)) {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['actions'][$methodName] ?? [];
-            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_merge($scanMiddlewares, $middlewares);
+            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_merge($classMiddlewares,$scanMiddlewares);
         } else {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['group'] ?? [];
-            self::$middlewares[$className]['middlewares']['group'] = array_merge($scanMiddlewares, $middlewares);
+            self::$middlewares[$className]['middlewares']['group'] = array_merge($classMiddlewares, $scanMiddlewares);
         }
     }
 
