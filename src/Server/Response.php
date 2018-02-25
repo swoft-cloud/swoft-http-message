@@ -91,8 +91,9 @@ class Response extends \Swoft\Http\Message\Base\Response
      * @param  int             $status          The HTTP status code.
      * @param  int             $encodingOptions Json encoding options
      * @return static when $data not jsonable
+     * @throws \InvalidArgumentException
      */
-    public function json($data = [], int $status = 200, int $encodingOptions = 0): Response
+    public function json($data = [], int $status = 200, int $encodingOptions = JSON_UNESCAPED_UNICODE): Response
     {
         $response = $this;
 
