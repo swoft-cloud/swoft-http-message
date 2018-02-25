@@ -64,6 +64,27 @@ trait ResponseAssertTrait
     }
 
     /**
+     * Asserts that the response contains the given header and contains the optional value.
+     *
+     * @param  string $headerName
+     * @param  mixed  $value
+     * @return $this
+     * @throws \PHPUnit_Framework_AssertionFailedError
+     */
+    public function assertHeaderContain($headerName, $value = null)
+    {
+        PHPUnit::assertTrue($this->hasHeader($headerName), "Header [{$headerName}] not present on response.");
+
+        $actual = $this->getHeaderLine($headerName);
+
+        if (null !== $value) {
+            PHPUnit::assertContains($value, $this->getHeaderLine($headerName), "Header [{$headerName}] was found, but value [{$actual}] does not contain [{$value}].");
+        }
+
+        return $this;
+    }
+
+    /**
      * Assert that the given string is contained within the response.
      *
      * @param  string $value
