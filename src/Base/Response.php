@@ -209,12 +209,11 @@ class Response implements ResponseInterface
      *
      * @param $charset
      * @return static
+     * @throws \InvalidArgumentException
      */
     public function withCharset($charset): self
     {
-        $clone = clone $this;
-        $clone->withAddedHeader('Content-Type', sprintf('charset=%s', $charset));
-        return $clone;
+        return $this->withAddedHeader('Content-Type', sprintf('charset=%s', $charset));
     }
 
     /**
