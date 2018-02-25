@@ -69,10 +69,10 @@ class MiddlewareCollector implements CollectorInterface
 
         if (! empty($methodName)) {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['actions'][$methodName] ?? [];
-            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_merge($classMiddlewares,$scanMiddlewares);
+            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_unique(array_merge($classMiddlewares,$scanMiddlewares));
         } else {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['group'] ?? [];
-            self::$middlewares[$className]['middlewares']['group'] = array_merge($classMiddlewares, $scanMiddlewares);
+            self::$middlewares[$className]['middlewares']['group'] = array_unique(array_merge($classMiddlewares, $scanMiddlewares));
         }
     }
 
@@ -91,10 +91,10 @@ class MiddlewareCollector implements CollectorInterface
 
         if (! empty($methodName)) {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['actions'][$methodName] ?? [];
-            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_merge($middlewares, $scanMiddlewares);
+            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_unique(array_merge($middlewares, $scanMiddlewares));
         } else {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['group'] ?? [];
-            self::$middlewares[$className]['middlewares']['group'] = array_merge($middlewares, $scanMiddlewares);
+            self::$middlewares[$className]['middlewares']['group'] = array_unique(array_merge($middlewares, $scanMiddlewares));
         }
     }
 }
