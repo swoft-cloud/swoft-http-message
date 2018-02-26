@@ -180,7 +180,17 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
         } elseif (isset($server['server_addr'])) {
             $uri = $uri->withHost($server['server_addr']);
         } elseif (isset($header['host'])) {
-            $host = \strpos($header['host'], ':') ? explode(':', $header['host'])[0] : $header['host'];
+            if (\strpos($header['host'], ':')) {
+                $hasPort = true;
+                list($host, $port) = explode(':', $header['host'], 2);
+
+                if ($port !== '80') {
+                    $uri = $uri->withPort($port);
+                }
+            } else {
+                $host = $header['host'];
+            }
+
             $uri = $uri->withHost($host);
         }
 
